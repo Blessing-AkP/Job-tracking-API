@@ -2,10 +2,14 @@ openapi: 3.0.0
 info:
   title: Jobs API
   contact: {}
-  version: '1.0'
+  version: "1.0"
 servers:
 - url: https://relieved-bonnet-slug.cyclic.cloud/api/v1
-  variables: {}
+tags:
+- name: Auth
+  description: ""
+- name: Jobs
+  description: ""
 paths:
   /auth/register:
     post:
@@ -15,27 +19,22 @@ paths:
       operationId: Register
       parameters: []
       requestBody:
-        description: ''
+        description: ""
         content:
           application/json:
             schema:
-              allOf:
-              - $ref: '#/components/schemas/RegisterRequest'
-              - example:
-                  name: Rane
-                  email: rane@domain.com
-                  password: secrete
+              $ref: '#/components/schemas/auth_register_body'
             example:
               name: Rane
               email: rane@domain.com
               password: secrete
         required: true
       responses:
-        '200':
-          description: ''
-          headers: {}
+        "200":
+          description: ""
       deprecated: false
       security: []
+      x-swagger-router-controller: Auth
   /auth/login:
     post:
       tags:
@@ -44,27 +43,22 @@ paths:
       operationId: Login
       parameters: []
       requestBody:
-        description: ''
+        description: ""
         content:
           application/json:
             schema:
-              allOf:
-              - $ref: '#/components/schemas/LoginRequest'
-              - example:
-                  name: Rane
-                  email: rane@domain.com
-                  password: secrete
+              $ref: '#/components/schemas/auth_login_body'
             example:
               name: Rane
               email: rane@domain.com
               password: secrete
         required: true
       responses:
-        '200':
-          description: ''
-          headers: {}
+        "200":
+          description: ""
       deprecated: false
       security: []
+      x-swagger-router-controller: Auth
   /jobs:
     post:
       tags:
@@ -73,26 +67,22 @@ paths:
       operationId: Create_Job
       parameters: []
       requestBody:
-        description: ''
+        description: ""
         content:
           application/json:
             schema:
-              allOf:
-              - $ref: '#/components/schemas/Create_Job_Request'
-              - example:
-                  company: BMW
-                  position: Automobile Engineer
+              $ref: '#/components/schemas/jobs_body'
             example:
               company: BMW
               position: Automobile Engineer
         required: true
       responses:
-        '200':
-          description: ''
-          headers: {}
+        "200":
+          description: ""
       deprecated: false
       security:
       - bearer: []
+      x-swagger-router-controller: Jobs
     get:
       tags:
       - Jobs
@@ -100,84 +90,96 @@ paths:
       operationId: GetAllJobs
       parameters: []
       responses:
-        '200':
-          description: ''
-          headers: {}
+        "200":
+          description: ""
       deprecated: false
       security:
       - bearer: []
+      x-swagger-router-controller: Jobs
+    
   /jobs/{id}:
-    parameters:
-      - in: path
-        name: id
-        schema:
-          type: string
-        required: true
-        description: The job ID
     get:
       tags:
       - Jobs
       summary: Get Single Job
       operationId: GetSingleJob
-      parameters: []
+      parameters:
+      - name: id
+        in: path
+        description: The job ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       responses:
-        '200':
-          description: ''
-          headers: {}
+        "200":
+          description: ""
       deprecated: false
       security:
       - bearer: []
-  
+      x-swagger-router-controller: Jobs
+    
     patch:
       tags:
       - Jobs
       summary: Update Job
       operationId: UpdateJob
-      parameters: []
+      parameters:
+      - name: id
+        in: path
+        description: The job ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       requestBody:
-        description: ''
+        description: ""
         content:
           application/json:
             schema:
-              allOf:
-              - $ref: '#/components/schemas/UpdateJobRequest'
-              - example:
-                  company: Nginx
-                  position: Application Developer
-                  status: Interview
+              $ref: '#/components/schemas/jobs_id_body'
             example:
               company: Nginx
               position: Application Developer
               status: Interview
         required: true
       responses:
-        '200':
-          description: ''
-          headers: {}
+        "200":
+          description: ""
       deprecated: false
       security:
       - bearer: []
-  
+      x-swagger-router-controller: Jobs
     delete:
       tags:
       - Jobs
       summary: Delete Job
       operationId: DeleteJob
-      parameters: []
+      parameters:
+      - name: id
+        in: path
+        description: The job ID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       responses:
-        '200':
-          description: ''
-          headers: {}
+        "200":
+          description: ""
       deprecated: false
       security:
       - bearer: []
+      x-swagger-router-controller: Jobs
 components:
   schemas:
     RegisterRequest:
       title: RegisterRequest
       required:
-      - name
       - email
+      - name
       - password
       type: object
       properties:
@@ -194,8 +196,8 @@ components:
     LoginRequest:
       title: LoginRequest
       required:
-      - name
       - email
+      - name
       - password
       type: object
       properties:
@@ -241,13 +243,34 @@ components:
         company: Nginx
         position: Application Developer
         status: Interview
+    auth_register_body:
+      allOf:
+      - $ref: '#/components/schemas/RegisterRequest'
+      - example:
+          name: Rane
+          email: rane@domain.com
+          password: secrete
+    auth_login_body:
+      allOf:
+      - $ref: '#/components/schemas/LoginRequest'
+      - example:
+          name: Rane
+          email: rane@domain.com
+          password: secrete
+    jobs_body:
+      allOf:
+      - $ref: '#/components/schemas/Create_Job_Request'
+      - example:
+          company: BMW
+          position: Automobile Engineer
+    jobs_id_body:
+      allOf:
+      - $ref: '#/components/schemas/UpdateJobRequest'
+      - example:
+          company: Nginx
+          position: Application Developer
+          status: Interview
   securitySchemes:
     bearer:
       type: http
       scheme: bearer
-security: []
-tags:
-- name: Auth
-  description: ''
-- name: Jobs
-  description: ''

@@ -1,3 +1,4 @@
+
 // Express
 const express = require('express');
 const app = express();
@@ -6,22 +7,27 @@ const app = express();
 require('dotenv').config();
 require('express-async-errors');
 
+// Configure Swagger-JSDoc
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerOptions = require('./swagger-config');
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
+// Mount Swagger UI Middleware
+const swaggerUi = require('swagger-ui-express');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 //Extra security packages
 const helmet = require('helmet');
 const cors = require('cors');
 const xss = require('xss-clean');
 const rateLimiter = require('express-rate-limit');
 
-// Require and configure the Swagger Documentation
-const configureSwagger = require('./swagger');
-configureSwagger(app);
-
 // DB module
 const connectDB = require('./db/connect'); 
 
 // not found and errorHandler Middleware
 const notFoundMiddleware = require('./middleware/not-found');
-const errorHandlerMiddleware = require('./middleware/error-handler')
+const errorHandlerMiddleware = require('./middleware/error-handler');
 
 //Routers
 const authRouter = require('./routes/auth');
@@ -29,6 +35,7 @@ const  jobsRouter = require('./routes/jobs');
 
 //Auth
 const auth = require('./middleware/authentication')
+
 
 //Middleware
 app.set('trust proxy', 1)
@@ -44,9 +51,7 @@ app.use(xss());
 // Routes
 app.get('/', (req, res) => {
   res.send('<h1>Jobs API</h1><a href="/api-docs">Documentation</a>');
-  
 });
-
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/jobs', auth, jobsRouter);
